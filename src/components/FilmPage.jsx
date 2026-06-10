@@ -90,99 +90,116 @@ function FilmPage() {
                 Film not found. <a href="/">Go back.</a>
             </p>
         );
-    if (status === "analyzing") return <p>Analyzing...</p>;
+
+    if (status === "analyzing")
+        return (
+            <div className="loader-page">
+                <div className="loader-inner">
+                    <div className="loader-spinner" />
+                    <p className="loader-text">Analyzing</p>
+                </div>
+            </div>
+        );
+
     if (status === "error") return <p>Something went wrong.</p>;
 
     return (
-        <div className="film-page">
-            <div className="film-left">
-                {metadata?.poster_path && (
-                    <img
-                        className="film-poster"
-                        src={getPosterUrl(metadata.poster_path)}
-                        alt={metadata.title}
-                    />
-                )}
-                <div className="film-details">
-                    <h1 className="film-title">
-                        {metadata?.title} ({year})
-                    </h1>
-                    <p className="film-meta">
-                        {director}
-                        {runtime && <> &nbsp;·&nbsp; {runtime} min</>}
-                        {country && <> &nbsp;·&nbsp; {country}</>}
-                    </p>
+        <div className="full-page">
+            <a href="/" className="logo">
+                <h1>Film Analysis</h1>
+            </a>
+            <div className="film-page">
+                <div className="film-left">
+                    {metadata?.poster_path && (
+                        <img
+                            className="film-poster"
+                            src={getPosterUrl(metadata.poster_path)}
+                            alt={metadata.title}
+                        />
+                    )}
+                    <div className="film-details">
+                        <h1 className="film-title">
+                            {metadata?.title} ({year})
+                        </h1>
+                        <p className="film-meta">
+                            {director}
+                            {runtime && <> &nbsp;·&nbsp; {runtime} min</>}
+                            {country && <> &nbsp;·&nbsp; {country}</>}
+                        </p>
+                        {analysis && (
+                            <>
+                                <div className="film-tags">
+                                    {analysis.themes.map((t) => (
+                                        <span key={t} className="tag">
+                                            {t}
+                                        </span>
+                                    ))}
+                                </div>
+                                <p className="film-mood">
+                                    <span className="mood-primary">
+                                        {analysis.mood.primary}
+                                    </span>
+                                    <span className="mood-descriptors">
+                                        {" "}
+                                        · {analysis.mood.descriptors.join(
+                                            ", ",
+                                        )}{" "}
+                                        ·{" "}
+                                    </span>
+                                    <span>{analysis.mood.tone}</span>
+                                </p>
+                                <hr className="divider" />
+                                <p className="essay-label">Essay</p>
+                                <p className="essay">{analysis.essay}</p>
+                            </>
+                        )}
+                    </div>
+                </div>
+
+                <div className="film-right">
                     {analysis && (
                         <>
-                            <div className="film-tags">
-                                {analysis.themes.map((t) => (
-                                    <span key={t} className="tag">
-                                        {t}
-                                    </span>
+                            <p className="constellation-label">Constellation</p>
+                            <div className="constellation-grid">
+                                {analysis.constellation.map((item) => (
+                                    <div
+                                        key={item.title}
+                                        className="c-card"
+                                        onClick={() =>
+                                            handleConstellationClick(item)
+                                        }
+                                    >
+                                        {item.tmdbData?.poster_path ? (
+                                            <img
+                                                className="c-poster"
+                                                src={getPosterUrl(
+                                                    item.tmdbData.poster_path,
+                                                )}
+                                                alt={item.title}
+                                            />
+                                        ) : (
+                                            <div className="c-poster c-poster-empty" />
+                                        )}
+                                        <div className="c-info">
+                                            <p className="c-title">
+                                                {item.title}
+                                            </p>
+                                            <p className="c-meta">
+                                                {item.director && (
+                                                    <>{item.director} · </>
+                                                )}
+                                                {item.year}
+                                            </p>
+                                            <p className="c-relation">
+                                                {item.relation}
+                                            </p>
+                                        </div>
+                                    </div>
                                 ))}
                             </div>
-                            <p className="film-mood">
-                                <span className="mood-primary">
-                                    {analysis.mood.primary}
-                                </span>
-                                <span className="mood-descriptors">
-                                    {" "}
-                                    · {analysis.mood.descriptors.join(
-                                        ", ",
-                                    )}{" "}
-                                    ·{" "}
-                                </span>
-                                <span>{analysis.mood.tone}</span>
-                            </p>
-                            <hr className="divider" />
-                            <p className="essay-label">Essay</p>
-                            <p className="essay">{analysis.essay}</p>
                         </>
                     )}
                 </div>
-            </div>
-
-            <div className="film-right">
-                {analysis && (
-                    <>
-                        <p className="constellation-label">Constellation</p>
-                        <div className="constellation-grid">
-                            {analysis.constellation.map((item) => (
-                                <div
-                                    key={item.title}
-                                    className="c-card"
-                                    onClick={() =>
-                                        handleConstellationClick(item)
-                                    }
-                                >
-                                    {item.tmdbData?.poster_path ? (
-                                        <img
-                                            className="c-poster"
-                                            src={getPosterUrl(
-                                                item.tmdbData.poster_path,
-                                            )}
-                                            alt={item.title}
-                                        />
-                                    ) : (
-                                        <div className="c-poster c-poster-empty" />
-                                    )}
-                                    <div className="c-info">
-                                        <p className="c-title">{item.title}</p>
-                                        <p className="c-meta">
-                                            {item.director && (
-                                                <>{item.director} · </>
-                                            )}
-                                            {item.year}
-                                        </p>
-                                        <p className="c-relation">
-                                            {item.relation}
-                                        </p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </>
-                )}
             </div>
         </div>
     );
