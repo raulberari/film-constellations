@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { searchFilm, getFilmDetails, buildSlug } from "../lib/tmdb.js";
+import {
+    searchFilm,
+    getFilmDetails,
+    buildSlug,
+    getFilmImages,
+    buildMoodSlug,
+} from "../lib/tmdb.js";
 import useStore from "../store.js";
 
 function SearchPage() {
@@ -21,18 +27,32 @@ function SearchPage() {
             const year = yearMatch ? yearMatch[2] : null;
 
             const result = await searchFilm(title, year);
-            if (!result) {
-                setError("No film found.");
-                setLoading(false);
-                return;
+
+            if (result) {
+                const queryLen = title.trim().length;
+                const resultLen = result.title.trim().length;
+                const isConfident = resultLen <= queryLen * 1.5;
+
+                if (!isConfident) {
+                    const moodSlug = buildMoodSlug(query.trim());
+                    navigate(`/mood/${moodSlug}`);
+                    return;
+                }
+                const details = await getFilmDetails(result.id);
+                const bestPoster = await getFilmImages(result.id);
+                if (bestPoster) details.poster_path = bestPoster;
+                const filmYear = details.release_date?.slice(0, 4);
+                const slug = buildSlug(details.title, filmYear);
+                setFilm(slug, { metadata: details, analysis: null });
+                navigate(`/film/${slug}`);
+            } else {
+                // treat as mood
+                const moodSlug = buildMoodSlug(query.trim());
+                navigate(`/mood/${moodSlug}`);
             }
-            const details = await getFilmDetails(result.id);
-            const filmYear = details.release_date?.slice(0, 4);
-            const slug = buildSlug(details.title, filmYear);
-            setFilm(slug, { metadata: details, analysis: null });
-            navigate(`/film/${slug}`);
-        } catch (_) {
+        } catch (err) {
             setError("Something went wrong.");
+            console.error(err);
         } finally {
             setLoading(false);
         }
@@ -46,7 +66,9 @@ function SearchPage() {
         <div className="search-page">
             <div className="search-inner">
                 <h1 className="search-title">Film Constellations</h1>
-                <p className="search-subtitle">Enter a title to begin</p>
+                <p className="search-subtitle">
+                    A film, a director, a country, a mood
+                </p>
                 <div className="search-row">
                     <input
                         className="search-input"
@@ -54,7 +76,7 @@ function SearchPage() {
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        placeholder="Beau Travail, Stalker, Platform..."
+                        placeholder="Beau Travail, Jia Zhangke, melancholy..."
                         autoFocus
                     />
                     <button

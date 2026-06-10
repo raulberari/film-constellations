@@ -6,6 +6,7 @@ import {
     buildSlug,
     buildMoodSlug,
     getPosterUrl,
+    getFilmImages,
 } from "../lib/tmdb.js";
 import useStore from "../store.js";
 
@@ -29,7 +30,6 @@ function FilmPage() {
 
     const year = metadata?.release_date?.slice(0, 4);
     const runtime = metadata?.runtime;
-    const country = metadata?.production_countries?.[0]?.name;
 
     useEffect(() => {
         if (film) return;
@@ -61,8 +61,9 @@ function FilmPage() {
                 if (correctSlug !== slug) {
                     navigate(`/film/${correctSlug}`, { replace: true });
                 }
-            } catch (_) {
+            } catch (err) {
                 setStatus("error");
+                console.error(err);
             }
         }
 
@@ -91,6 +92,11 @@ function FilmPage() {
                         const details = result
                             ? await getFilmDetails(result.id)
                             : null;
+                        const bestPoster = details
+                            ? await getFilmImages(result.id)
+                            : null;
+                        if (bestPoster && details)
+                            details.poster_path = bestPoster;
                         const itemDirector = details?.credits?.crew?.find(
                             (p) => p.job === "Director",
                         )?.name;
@@ -113,8 +119,9 @@ function FilmPage() {
                     analysis: { ...data, constellation: constellationWithMeta },
                 });
                 setTimeout(() => setStatus("done"), 0);
-            } catch (_) {
+            } catch (err) {
                 setStatus("error");
+                console.error(err);
             }
         }
 
@@ -337,16 +344,12 @@ function FilmPage() {
                             {year} ·{" "}
                             {directors.map((d, i) => (
                                 <span key={d}>
-                                    <span
+                                    <a
                                         className="theme-link"
-                                        onClick={() =>
-                                            navigate(
-                                                `/mood/${buildMoodSlug(d)}`,
-                                            )
-                                        }
+                                        href={`/mood/${buildMoodSlug(d)}`}
                                     >
                                         {d}
-                                    </span>
+                                    </a>
                                     {i < directors.length - 1 ? ", " : ""}
                                 </span>
                             ))}
@@ -356,16 +359,12 @@ function FilmPage() {
                                     {" · "}
                                     {countries.map((c, i) => (
                                         <span key={c}>
-                                            <span
+                                            <a
                                                 className="theme-link"
-                                                onClick={() =>
-                                                    navigate(
-                                                        `/mood/${buildMoodSlug(c)}`,
-                                                    )
-                                                }
+                                                href={`/mood/${buildMoodSlug(c)}`}
                                             >
                                                 {c}
-                                            </span>
+                                            </a>
                                             {i < countries.length - 1
                                                 ? ", "
                                                 : ""}
@@ -377,16 +376,12 @@ function FilmPage() {
                         <p className="film-themes-line">
                             {analysis.themes.map((t, i) => (
                                 <span key={t}>
-                                    <span
+                                    <a
                                         className="theme-link"
-                                        onClick={() =>
-                                            navigate(
-                                                `/mood/${buildMoodSlug(t)}`,
-                                            )
-                                        }
+                                        href={`/mood/${buildMoodSlug(t)}`}
                                     >
                                         {t}
-                                    </span>
+                                    </a>
                                     {i < analysis.themes.length - 1
                                         ? " · "
                                         : ""}
