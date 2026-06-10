@@ -174,6 +174,12 @@ function FilmPage() {
 
     if (status === "error") return <p>Something went wrong.</p>;
 
+    let validConstellation = [];
+    if (analysis) {
+        validConstellation = analysis.constellation
+            .filter((item) => item.tmdbData !== null)
+            .slice(0, 12);
+    }
     return (
         <div className="full-page">
             <a href="/" className="logo">
@@ -184,7 +190,7 @@ function FilmPage() {
                 <>
                     <div className="orbit-zone">
                         <div className="constellation-left">
-                            {analysis.constellation.slice(0, 6).map((item) => (
+                            {validConstellation.slice(0, 6).map((item) => (
                                 <div
                                     key={item.title}
                                     className="c-node"
@@ -248,7 +254,7 @@ function FilmPage() {
                         </div>
 
                         <div className="constellation-right">
-                            {analysis.constellation.slice(6, 12).map((item) => (
+                            {validConstellation.slice(6, 12).map((item) => (
                                 <div
                                     key={item.title}
                                     className="c-node"
@@ -293,7 +299,7 @@ function FilmPage() {
                         </div>
 
                         <div className="mobile-constellation">
-                            {analysis.constellation.map((item) => (
+                            {validConstellation.map((item) => (
                                 <div
                                     key={`mobile-${item.title}`}
                                     className="c-node"

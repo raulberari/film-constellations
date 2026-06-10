@@ -57,8 +57,9 @@ function MoodPage() {
 
                 setMood(slug, { films: filmsWithMeta });
                 setTimeout(() => setStatus("done"), 0);
-            } catch (_) {
+            } catch (err) {
                 setStatus("error");
+                console.error(err);
             }
         }
 

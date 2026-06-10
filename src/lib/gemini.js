@@ -60,7 +60,7 @@ export function buildPrompt(film) {
             "tags": ["movements, formal qualities, national cinemas"]
         }
 
-        Return exactly ${CONSTELLATION_SIZE} items in the constellation array.
+        Return exactly ${CONSTELLATION_SIZE + 3} items in the constellation array.
         No markdown, no preamble, no explanation outside the JSON.
 
         Film data:
