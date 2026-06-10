@@ -28,9 +28,48 @@ function FilmPage() {
     const country = metadata?.production_countries?.[0]?.name;
 
     useEffect(() => {
+        if (film) return;
+        if (!slug) return;
+
+        async function fetchFromSlug() {
+            setStatus("fetching");
+            try {
+                const yearMatch = slug.match(/-(\d{4})$/);
+                const year = yearMatch ? yearMatch[1] : null;
+                const titleSlug = year
+                    ? slug.slice(0, slug.lastIndexOf("-" + year))
+                    : slug;
+                const title = titleSlug.replace(/-/g, " ");
+
+                const result = await searchFilm(title, year);
+                if (!result) {
+                    setStatus("error");
+                    return;
+                }
+
+                const details = await getFilmDetails(result.id);
+                const filmYear = details.release_date?.slice(0, 4);
+                const correctSlug = buildSlug(details.title, filmYear);
+
+                setFilm(correctSlug, { metadata: details, analysis: null });
+                setStatus("idle");
+
+                if (correctSlug !== slug) {
+                    navigate(`/film/${correctSlug}`, { replace: true });
+                }
+            } catch (_) {
+                setStatus("error");
+            }
+        }
+
+        fetchFromSlug();
+    }, [slug, film]);
+
+    useEffect(() => {
         if (!metadata) return;
         if (analysis) return;
         if (status === "analyzing") return;
+        if (status === "fetching") return;
 
         async function analyzeFilm() {
             setStatus("analyzing");
@@ -69,7 +108,7 @@ function FilmPage() {
                     metadata,
                     analysis: { ...data, constellation: constellationWithMeta },
                 });
-                setStatus("done");
+                setTimeout(() => setStatus("done"), 0);
             } catch (_) {
                 setStatus("error");
             }
@@ -84,19 +123,40 @@ function FilmPage() {
         navigate(`/film/${item.slug}`);
     }
 
-    if (!film)
+    if (status === "analyzing" || status === "fetching")
         return (
-            <p>
-                Film not found. <a href="/">Go back.</a>
-            </p>
-        );
-
-    if (status === "analyzing")
-        return (
-            <div className="loader-page">
-                <div className="loader-inner">
-                    <div className="loader-spinner" />
-                    <p className="loader-text">Analyzing</p>
+            <div className="full-page">
+                <a href="/" className="logo">
+                    <h1>Film Constellations</h1>
+                </a>
+                <div className="loader-page">
+                    <div className="loader-inner">
+                        <div
+                            className="poster-center"
+                            style={{
+                                position: "static",
+                                transform: "none",
+                                marginBottom: "1rem",
+                            }}
+                        >
+                            {metadata?.poster_path && (
+                                <img
+                                    className="poster-img"
+                                    src={getPosterUrl(metadata.poster_path)}
+                                    alt={metadata.title}
+                                    onLoad={(e) =>
+                                        e.target.classList.add("loaded")
+                                    }
+                                />
+                            )}
+                            <p className="poster-name">{metadata?.title}</p>
+                            <p className="poster-dir">
+                                {director} · {year}
+                            </p>
+                        </div>
+                        <div className="loader-spinner" />
+                        <p className="loader-text">Analyzing</p>
+                    </div>
                 </div>
             </div>
         );
@@ -106,85 +166,43 @@ function FilmPage() {
     return (
         <div className="full-page">
             <a href="/" className="logo">
-                <h1>Film Analysis</h1>
+                <h1>Film Constellations</h1>
             </a>
-            <div className="film-page">
-                <div className="film-left">
-                    {metadata?.poster_path && (
-                        <img
-                            className="film-poster"
-                            src={getPosterUrl(metadata.poster_path)}
-                            alt={metadata.title}
-                        />
-                    )}
-                    <div className="film-details">
-                        <h1 className="film-title">
-                            {metadata?.title} ({year})
-                        </h1>
-                        <p className="film-meta">
-                            {director}
-                            {runtime && <> &nbsp;·&nbsp; {runtime} min</>}
-                            {country && <> &nbsp;·&nbsp; {country}</>}
-                        </p>
-                        {analysis && (
-                            <>
-                                <div className="film-tags">
-                                    {analysis.themes.map((t) => (
-                                        <span key={t} className="tag">
-                                            {t}
-                                        </span>
-                                    ))}
-                                </div>
-                                <p className="film-mood">
-                                    <span className="mood-primary">
-                                        {analysis.mood.primary}
-                                    </span>
-                                    <span className="mood-descriptors">
-                                        {" "}
-                                        · {analysis.mood.descriptors.join(
-                                            ", ",
-                                        )}{" "}
-                                        ·{" "}
-                                    </span>
-                                    <span>{analysis.mood.tone}</span>
-                                </p>
-                                <hr className="divider" />
-                                <p className="essay-label">Essay</p>
-                                <p className="essay">{analysis.essay}</p>
-                            </>
-                        )}
-                    </div>
-                </div>
 
-                <div className="film-right">
-                    {analysis && (
-                        <>
-                            <p className="constellation-label">Constellation</p>
-                            <div className="constellation-grid">
-                                {analysis.constellation.map((item) => (
-                                    <div
-                                        key={item.title}
-                                        className="c-card"
-                                        onClick={() =>
-                                            handleConstellationClick(item)
-                                        }
-                                    >
+            {analysis && (
+                <>
+                    <div className="orbit-zone">
+                        <div className="constellation-left">
+                            {analysis.constellation.slice(0, 6).map((item) => (
+                                <div
+                                    key={item.title}
+                                    className="c-node"
+                                    onClick={() =>
+                                        handleConstellationClick(item)
+                                    }
+                                >
+                                    <div className="c-card-inner">
                                         {item.tmdbData?.poster_path ? (
                                             <img
-                                                className="c-poster"
+                                                className="c-thumb"
                                                 src={getPosterUrl(
                                                     item.tmdbData.poster_path,
                                                 )}
                                                 alt={item.title}
+                                                onLoad={(e) =>
+                                                    e.target.classList.add(
+                                                        "loaded",
+                                                    )
+                                                }
                                             />
                                         ) : (
-                                            <div className="c-poster c-poster-empty" />
+                                            <div className="c-thumb c-thumb-empty" />
                                         )}
-                                        <div className="c-info">
+                                        <div className="c-body">
                                             <p className="c-title">
                                                 {item.title}
                                             </p>
-                                            <p className="c-meta">
+                                            <p className="c-year">
                                                 {item.director && (
                                                     <>{item.director} · </>
                                                 )}
@@ -195,12 +213,141 @@ function FilmPage() {
                                             </p>
                                         </div>
                                     </div>
-                                ))}
-                            </div>
-                        </>
-                    )}
-                </div>
-            </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="poster-center">
+                            {metadata?.poster_path ? (
+                                <img
+                                    className="poster-img"
+                                    src={getPosterUrl(metadata.poster_path)}
+                                    alt={metadata.title}
+                                    onLoad={(e) =>
+                                        e.target.classList.add("loaded")
+                                    }
+                                />
+                            ) : (
+                                <div className="poster-placeholder" />
+                            )}
+                            <p className="poster-name">{metadata?.title}</p>
+                            <p className="poster-dir">
+                                {director} · {year}
+                            </p>
+                        </div>
+
+                        <div className="constellation-right">
+                            {analysis.constellation.slice(6, 12).map((item) => (
+                                <div
+                                    key={item.title}
+                                    className="c-node"
+                                    onClick={() =>
+                                        handleConstellationClick(item)
+                                    }
+                                >
+                                    <div className="c-card-inner">
+                                        {item.tmdbData?.poster_path ? (
+                                            <img
+                                                className="c-thumb"
+                                                src={getPosterUrl(
+                                                    item.tmdbData.poster_path,
+                                                )}
+                                                alt={item.title}
+                                                onLoad={(e) =>
+                                                    e.target.classList.add(
+                                                        "loaded",
+                                                    )
+                                                }
+                                            />
+                                        ) : (
+                                            <div className="c-thumb c-thumb-empty" />
+                                        )}
+                                        <div className="c-body">
+                                            <p className="c-title">
+                                                {item.title}
+                                            </p>
+                                            <p className="c-year">
+                                                {item.director && (
+                                                    <>{item.director} · </>
+                                                )}
+                                                {item.year}
+                                            </p>
+                                            <p className="c-relation">
+                                                {item.relation}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="mobile-constellation">
+                            {analysis.constellation.map((item) => (
+                                <div
+                                    key={`mobile-${item.title}`}
+                                    className="c-node"
+                                    onClick={() =>
+                                        handleConstellationClick(item)
+                                    }
+                                >
+                                    <div className="c-card-inner">
+                                        {item.tmdbData?.poster_path ? (
+                                            <img
+                                                className="c-thumb"
+                                                src={getPosterUrl(
+                                                    item.tmdbData.poster_path,
+                                                )}
+                                                alt={item.title}
+                                                onLoad={(e) =>
+                                                    e.target.classList.add(
+                                                        "loaded",
+                                                    )
+                                                }
+                                            />
+                                        ) : (
+                                            <div className="c-thumb c-thumb-empty" />
+                                        )}
+                                        <div className="c-body">
+                                            <p className="c-title">
+                                                {item.title}
+                                            </p>
+                                            <p className="c-year">
+                                                {item.director && (
+                                                    <>{item.director} · </>
+                                                )}
+                                                {item.year}
+                                            </p>
+                                            <p className="c-relation">
+                                                {item.relation}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="essay-zone">
+                        <h1 className="film-title-huge">{metadata?.title}</h1>
+                        <p className="film-meta-line">
+                            {year} · {director}
+                            {runtime && ` · ${runtime} min`}
+                            {country && ` · ${country}`}
+                        </p>
+                        <p className="film-themes-line">
+                            {analysis.themes.join(" · ")}
+                        </p>
+                        <p className="film-mood-line">
+                            {analysis.mood.primary} ·{" "}
+                            {analysis.mood.descriptors.join(", ")} ·{" "}
+                            {analysis.mood.tone}
+                        </p>
+                        <div className="essay-body">
+                            <p className="essay-text">{analysis.essay}</p>
+                        </div>
+                    </div>
+                </>
+            )}
         </div>
     );
 }

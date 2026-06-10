@@ -16,15 +16,19 @@ function SearchPage() {
         setError(null);
 
         try {
-            const result = await searchFilm(query);
+            const yearMatch = query.trim().match(/^(.*?)\s+(\d{4})$/);
+            const title = yearMatch ? yearMatch[1].trim() : query.trim();
+            const year = yearMatch ? yearMatch[2] : null;
+
+            const result = await searchFilm(title, year);
             if (!result) {
                 setError("No film found.");
                 setLoading(false);
                 return;
             }
             const details = await getFilmDetails(result.id);
-            const year = details.release_date?.slice(0, 4);
-            const slug = buildSlug(details.title, year);
+            const filmYear = details.release_date?.slice(0, 4);
+            const slug = buildSlug(details.title, filmYear);
             setFilm(slug, { metadata: details, analysis: null });
             navigate(`/film/${slug}`);
         } catch (_) {
@@ -41,7 +45,7 @@ function SearchPage() {
     return (
         <div className="search-page">
             <div className="search-inner">
-                <h1 className="search-title">Film Analysis</h1>
+                <h1 className="search-title">Film Constellations</h1>
                 <p className="search-subtitle">Enter a title to begin</p>
                 <div className="search-row">
                     <input

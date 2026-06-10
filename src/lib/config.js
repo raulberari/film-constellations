@@ -1,1 +1,1 @@
-export const CONSTELLATION_SIZE = 10;
+export const CONSTELLATION_SIZE = 12;

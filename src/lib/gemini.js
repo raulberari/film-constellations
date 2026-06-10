@@ -19,6 +19,7 @@ export const systemInstruction = `You are a film critic writing for readers who 
     NO em dashes.
     Avoid using the "body" in descriptions.
 
+
     You write with precision and economy. Your essay opens with brief 
     orientation — what kind of film this is, what world it inhabits — 
     then moves into analysis of form, theme, and significance. You are 
@@ -50,9 +51,9 @@ export function buildPrompt(film) {
             },
             "constellation": [
                 {
-                "title": "mostly SIMILAR film titles",
+                "title": "mostly SIMILAR film titles. dont recommend the same film as the one submitted",
                 "year": 1985,
-                "relation": "precise sentence explaining the relationship. 2 sentences"
+                "relation": "precise sentence explaining the relationship"
                 }
             ],
             "essay": "2-4 paragraphs. Brief orientation first, then genuine critical analysis.",
