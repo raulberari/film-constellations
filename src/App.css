@@ -347,8 +347,8 @@ body {
     line-height: 1.35;
     flex: 1;
     display: -webkit-box;
-    line-clamp: 4;
-    -webkit-line-clamp: 4;
+    line-clamp: 5;
+    -webkit-line-clamp: 5;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -398,6 +398,27 @@ body {
     color: #111;
     columns: 2;
     column-gap: 2rem;
+}
+
+.theme-link {
+    cursor: pointer;
+}
+
+.theme-link:hover {
+    text-decoration: underline;
+}
+
+.mood-center-label {
+    display: none;
+}
+
+.mood-center-text {
+    font-size: 24px;
+    font-weight: 700;
+    color: #111;
+    line-height: 1.2;
+    text-align: center;
+    max-width: 200px;
 }
 
 .mobile-constellation {
@@ -467,5 +488,11 @@ body {
 
     .film-themes-line {
         font-size: 18px;
+    }
+
+    .mood-center-text {
+        max-width: 100%;
+        font-size: clamp(28px, 8vw, 42px);
+        margin-bottom: 0.5rem;
     }
 }

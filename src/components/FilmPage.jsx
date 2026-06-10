@@ -4,6 +4,7 @@ import {
     searchFilm,
     getFilmDetails,
     buildSlug,
+    buildMoodSlug,
     getPosterUrl,
 } from "../lib/tmdb.js";
 import useStore from "../store.js";
@@ -332,10 +333,40 @@ function FilmPage() {
                         <p className="film-meta-line">
                             {year} · {director}
                             {runtime && ` · ${runtime} min`}
-                            {country && ` · ${country}`}
+                            {country && (
+                                <>
+                                    {" · "}
+                                    <span
+                                        className="theme-link"
+                                        onClick={() =>
+                                            navigate(
+                                                `/mood/${buildMoodSlug(country)}`,
+                                            )
+                                        }
+                                    >
+                                        {country}
+                                    </span>
+                                </>
+                            )}
                         </p>
                         <p className="film-themes-line">
-                            {analysis.themes.join(" · ")}
+                            {analysis.themes.map((t, i) => (
+                                <span key={t}>
+                                    <span
+                                        className="theme-link"
+                                        onClick={() =>
+                                            navigate(
+                                                `/mood/${buildMoodSlug(t)}`,
+                                            )
+                                        }
+                                    >
+                                        {t}
+                                    </span>
+                                    {i < analysis.themes.length - 1
+                                        ? " · "
+                                        : ""}
+                                </span>
+                            ))}
                         </p>
                         <p className="film-mood-line">
                             {analysis.mood.primary} ·{" "}

@@ -39,3 +39,10 @@ export function buildSlug(title, year) {
         year
     );
 }
+
+export function buildMoodSlug(mood) {
+    return mood
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
+}
