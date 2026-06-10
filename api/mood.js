@@ -23,17 +23,20 @@ export default async function handler(req, res) {
                             role: "user",
                             parts: [
                                 {
-                                    text: `Return a JSON array of exactly 12 films that exemplify the theme or mood: "${mood}".
-                                            If the mood is a country, return 12 films from that country that are representative of it.
+                                    text: `Return a JSON array of exactly 12 films that exemplify the theme, mood, country, or director: "${mood}".
 
-                                            Each item in the array should have this exact structure:
-                                            {
-                                            "title": "film title",
-                                            "year": 1984,
-                                            "relation": "one sentence explaining why this film exemplifies the theme"
-                                            }
+                                        - If it is a theme or mood, return 12 films that exemplify it.
+                                        - If it is a country, return 12 representative films from that country.
+                                        - If it is a director's name, return 12 films by that director, ordered by importance.
 
-                                            Return only the JSON array. No markdown, no preamble, no explanation outside the JSON.`,
+                                        Each item in the array should have this exact structure:
+                                        {
+                                        "title": "film title",
+                                        "year": 1984,
+                                        "relation": "one sentence explaining why this film is relevant"
+                                        }
+
+                                        Return only the JSON array. No markdown, no preamble, no explanation outside the JSON.`,
                                 },
                             ],
                         },

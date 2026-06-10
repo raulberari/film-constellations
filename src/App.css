@@ -77,30 +77,37 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    background-size: cover;
+    background-image: url("https://store.grasshopperfilm.com/mm5/graphics/00000001/TTTT_1.jpg");
 }
 
 .search-inner {
     width: 100%;
-    max-width: 480px;
+    max-width: 960px;
     padding: 2rem;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .search-title {
-    font-size: 28px;
-    font-weight: 500;
+    font-size: 64px;
+    color: #fafafa;
+    font-weight: 700;
     margin-bottom: 0.5rem;
 }
 
 .search-subtitle {
     font-size: 14px;
-    color: #999;
+    color: #ccc;
     margin-bottom: 2rem;
 }
 
 .search-row {
     display: flex;
     gap: 8px;
+    width: 480px;
 }
 
 .search-input {
@@ -187,8 +194,8 @@ body {
 }
 
 .logo h1 {
-    font-size: 28px;
-    font-weight: 500;
+    font-size: 22px;
+    font-weight: 700;
 }
 
 .logo:visited {

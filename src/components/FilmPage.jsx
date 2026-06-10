@@ -20,10 +20,13 @@ function FilmPage() {
     const film = films[slug];
     const metadata = film?.metadata;
     const analysis = film?.analysis;
+    const directors =
+        metadata?.credits?.crew
+            ?.filter((p) => p.job === "Director")
+            .map((p) => p.name) ?? [];
+    const director = directors.join(", ");
+    const countries = metadata?.production_countries?.map((c) => c.name) ?? [];
 
-    const director = metadata?.credits?.crew?.find(
-        (p) => p.job === "Director",
-    )?.name;
     const year = metadata?.release_date?.slice(0, 4);
     const runtime = metadata?.runtime;
     const country = metadata?.production_countries?.[0]?.name;
@@ -331,21 +334,43 @@ function FilmPage() {
                     <div className="essay-zone">
                         <h1 className="film-title-huge">{metadata?.title}</h1>
                         <p className="film-meta-line">
-                            {year} · {director}
-                            {runtime && ` · ${runtime} min`}
-                            {country && (
-                                <>
-                                    {" · "}
+                            {year} ·{" "}
+                            {directors.map((d, i) => (
+                                <span key={d}>
                                     <span
                                         className="theme-link"
                                         onClick={() =>
                                             navigate(
-                                                `/mood/${buildMoodSlug(country)}`,
+                                                `/mood/${buildMoodSlug(d)}`,
                                             )
                                         }
                                     >
-                                        {country}
+                                        {d}
                                     </span>
+                                    {i < directors.length - 1 ? ", " : ""}
+                                </span>
+                            ))}
+                            {runtime && ` · ${runtime} min`}
+                            {countries.length > 0 && (
+                                <>
+                                    {" · "}
+                                    {countries.map((c, i) => (
+                                        <span key={c}>
+                                            <span
+                                                className="theme-link"
+                                                onClick={() =>
+                                                    navigate(
+                                                        `/mood/${buildMoodSlug(c)}`,
+                                                    )
+                                                }
+                                            >
+                                                {c}
+                                            </span>
+                                            {i < countries.length - 1
+                                                ? ", "
+                                                : ""}
+                                        </span>
+                                    ))}
                                 </>
                             )}
                         </p>
