@@ -28,7 +28,7 @@ function MoodPage() {
                 const res = await fetch("/api/mood", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ mood: label }),
+                    body: JSON.stringify({ mood: label, slug }),
                 });
                 const data = await res.json();
 
@@ -90,6 +90,12 @@ function MoodPage() {
 
     if (status === "error") return <p>Something went wrong.</p>;
 
+    let validFilms = [];
+    if (mood) {
+        validFilms = mood.films
+            .filter((item) => item.tmdbData !== null)
+            .slice(0, 12);
+    }
     return (
         <div className="full-page">
             <a href="/" className="logo">
@@ -98,7 +104,7 @@ function MoodPage() {
             {mood && (
                 <div className="orbit-zone">
                     <div className="constellation-left">
-                        {mood.films.slice(0, 6).map((item) => (
+                        {validFilms.slice(0, 6).map((item) => (
                             <div
                                 key={item.title}
                                 className="c-node"
@@ -141,7 +147,7 @@ function MoodPage() {
                     </div>
 
                     <div className="constellation-right">
-                        {mood.films.slice(6, 12).map((item) => (
+                        {validFilms.slice(6, 12).map((item) => (
                             <div
                                 key={item.title}
                                 className="c-node"
@@ -180,7 +186,7 @@ function MoodPage() {
                     </div>
 
                     <div className="mobile-constellation">
-                        {mood.films.map((item) => (
+                        {validFilms.map((item) => (
                             <div
                                 key={`mobile-${item.title}`}
                                 className="c-node"

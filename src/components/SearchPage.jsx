@@ -25,7 +25,7 @@ const BACKDROPS = [
     "https://image.tmdb.org/t/p/original/9eUKLg2HAxE86b0DmQMN5VAxU9B.jpg",
     "https://image.tmdb.org/t/p/original/2834YQ1Zq8UP6fwJIVZtnhYU0Cs.jpg",
     "https://image.tmdb.org/t/p/original/sUy6Ti0zTGnQffeyMRq03xIOu9E.jpg",
-    "https://01185108087561430683.googlegroups.com/attach/1722334ecd751/Hours-for-Jerome-Part-1-program-2_press.jpg?part=0.3&view=1&vt=ANaJVrHqzV2AW8IRCjm_dEiWz4LozlQm_Y9HLRbOFL9fMe9S2_DUheo_osR0hnv9oO4DAT7nrf7GLKvxNfpHanKAY1nV1mbV_Dn-84M969RXI5ArEVUamg0",
+    "https://image.tmdb.org/t/p/original/lmq6cfQNKcjlcKT4BF1pHy9i4Ud.jpg",
 ];
 
 const backdrop = BACKDROPS[Math.floor(Math.random() * BACKDROPS.length)];

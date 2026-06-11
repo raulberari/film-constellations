@@ -4,10 +4,18 @@ import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import App from "./App.jsx";
 
+const isDev = import.meta.env.DEV;
+
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </StrictMode>,
+    isDev ? (
+        <BrowserRouter>
+            <App />
+        </BrowserRouter>
+    ) : (
+        <StrictMode>
+            <BrowserRouter>
+                <App />
+            </BrowserRouter>
+        </StrictMode>
+    ),
 );

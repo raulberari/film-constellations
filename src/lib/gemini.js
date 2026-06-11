@@ -44,11 +44,6 @@ export function buildPrompt(film) {
       
         {
             "themes": ["3-6 thematic preoccupations, not genres — e.g. 'colonial memory', 'erotic ambivalence'"],
-            "mood": {
-                "primary": "dominant emotional register in one word",
-                "descriptors": ["2-4 adjectives"],
-                "tone": "narrative/formal stance"
-            },
             "constellation": [
                 {
                 "title": "mostly SIMILAR film titles. dont recommend the same film as the one submitted",

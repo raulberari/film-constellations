@@ -82,7 +82,7 @@ function FilmPage() {
                 const res = await fetch("/api/analyze", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ film: metadata }),
+                    body: JSON.stringify({ film: metadata, slug }),
                 });
                 const data = await res.json();
 
@@ -393,11 +393,6 @@ function FilmPage() {
                                         : ""}
                                 </span>
                             ))}
-                        </p>
-                        <p className="film-mood-line">
-                            {analysis.mood.primary} ·{" "}
-                            {analysis.mood.descriptors.join(", ")} ·{" "}
-                            {analysis.mood.tone}
                         </p>
                         <div className="essay-body">
                             <p className="essay-text">{analysis.essay}</p>
