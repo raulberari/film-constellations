@@ -23,7 +23,7 @@ const PROVIDERS = {
     },
     claude: {
         url: "https://api.anthropic.com/v1/messages",
-        model: "claude-haiku-4-5",
+        model: "claude-sonnet-4-6",
         apiKey: () => process.env.ANTHROPIC_API_KEY,
         parseResponse: (data) => data.content?.[0]?.text,
     },
@@ -34,7 +34,7 @@ export async function callAI({
     system,
     user,
     temperature = 0.7,
-    maxTokens = 16000,
+    maxTokens = 8192,
 }) {
     const providerKey = providerOverride ?? AI_PROVIDER;
     const provider = PROVIDERS[providerKey];

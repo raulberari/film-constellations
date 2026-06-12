@@ -543,7 +543,7 @@ body {
     }
 
     .film-title-huge {
-        font-size: clamp(64px, 10vw, 92px);
+        font-size: 58px;
     }
 
     .film-themes-line {

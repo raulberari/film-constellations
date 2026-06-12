@@ -9,6 +9,12 @@ const kv = new Redis({
 });
 
 export default async function handler(req, res) {
+    const MIN_WORDS = 350;
+    const MAX_RETRIES = 2;
+
+    let text = null;
+    let attempts = 0;
+
     if (req.method !== "POST") {
         return res.status(405).json({ error: "Method not allowed" });
     }
@@ -28,18 +34,32 @@ export default async function handler(req, res) {
     }
 
     try {
-        const text = await callAI({
-            provider: "deepseek",
-            system: systemInstruction,
-            user: buildEssayPrompt(film),
-        });
+        while (attempts < MAX_RETRIES) {
+            text = await callAI({
+                provider: "claude",
+                system: systemInstruction,
+                user: buildEssayPrompt(film),
+            });
+
+            const wordCount = text
+                ?.replace(/```json|```/g, "")
+                .trim()
+                .split(/\s+/).length;
+
+            if (wordCount >= MIN_WORDS) break;
+
+            attempts++;
+            console.log(
+                `Essay too short (${wordCount} words), retrying... attempt ${attempts}`,
+            );
+        }
 
         if (!text) return res.status(500).json({ error: "Empty response" });
 
         const clean = text.replace(/```json|```/g, "").trim();
         const analysis = JSON.parse(clean);
 
-        await kv.set(`essay:${slug}`, analysis, { ex: 60 * 60 * 24 * 30 });
+        await kv.set(`essay:${slug}`, analysis);
 
         return res.status(200).json(analysis);
     } catch (err) {

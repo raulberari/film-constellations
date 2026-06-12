@@ -25,7 +25,7 @@ function MoodPage() {
         () =>
             Array.from({ length: 16 }, (_, i) => ({
                 seed: (tick * 3 + i * 7) % 100,
-                radius: (1 + ((tick * Math.random() + i) % 5)) / 10,
+                radius: (1 + ((tick * Math.random() + i) % 9)) / 10,
             })),
         [tick],
     );
