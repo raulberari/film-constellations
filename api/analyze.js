@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { buildPrompt, systemInstruction } from "../src/lib/gemini.js";
 import { callAI } from "../src/lib/ai.js";
 import { Redis } from "@upstash/redis";
@@ -20,7 +21,6 @@ export default async function handler(req, res) {
     try {
         const cached = await kv.get(`film:${slug}`);
         if (cached) {
-            console.log("cache hit:", slug);
             return res.status(200).json(cached);
         }
     } catch (err) {

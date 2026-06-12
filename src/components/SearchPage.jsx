@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
     searchFilm,
@@ -36,6 +36,10 @@ function SearchPage() {
     const [error, setError] = useState(null);
     const setFilm = useStore((state) => state.setFilm);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        document.title = "Film Constellations";
+    }, []);
 
     async function handleSearch() {
         if (!query.trim()) return;
@@ -91,7 +95,7 @@ function SearchPage() {
             <div className="search-inner">
                 <h1 className="search-title">Film Constellations</h1>
                 <p className="search-subtitle">
-                    A film, a director, a country, a mood
+                    A map of cinema built through association.
                 </p>
                 <div className="search-row">
                     <input
@@ -100,7 +104,7 @@ function SearchPage() {
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        placeholder="Beau Travail, Jia Zhangke, melancholy..."
+                        placeholder="Beau Travail, Jia Zhangke, interiority..."
                         autoFocus
                     />
                     <button
@@ -108,7 +112,19 @@ function SearchPage() {
                         onClick={handleSearch}
                         disabled={loading}
                     >
-                        {loading ? "..." : "Search"}
+                        <svg
+                            width="18"
+                            height="18"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        >
+                            <circle cx="11" cy="11" r="8" />
+                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                        </svg>
                     </button>
                 </div>
                 {error && <p className="search-error">{error}</p>}

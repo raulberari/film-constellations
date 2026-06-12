@@ -4,7 +4,7 @@ import { AI_PROVIDER } from "./config.js";
 const PROVIDERS = {
     deepseek: {
         url: "https://api.deepseek.com/chat/completions",
-        model: "deepseek-chat",
+        model: "deepseek-v4-flash",
         apiKey: () => process.env.DEEPSEEK_API_KEY,
         parseResponse: (data) => data.choices?.[0]?.message?.content,
     },
@@ -21,26 +21,44 @@ const PROVIDERS = {
         parseResponse: (data) =>
             data.candidates?.[0]?.content?.parts?.findLast((p) => p.text)?.text,
     },
+    claude: {
+        url: "https://api.anthropic.com/v1/messages",
+        model: "claude-sonnet-4-6",
+        apiKey: () => process.env.ANTHROPIC_API_KEY,
+        parseResponse: (data) => data.content?.[0]?.text,
+    },
 };
 
 export async function callAI({
+    provider: providerOverride,
     system,
     user,
     temperature = 0.7,
     maxTokens = 2048,
 }) {
-    const provider = PROVIDERS[AI_PROVIDER];
+    const providerKey = providerOverride ?? AI_PROVIDER;
+    const provider = PROVIDERS[providerKey];
 
     let url = provider.url;
     let headers = { "Content-Type": "application/json" };
     let body;
 
-    if (AI_PROVIDER === "gemini") {
+    if (providerKey === "gemini") {
         url = `${provider.url}?key=${provider.apiKey()}`;
         body = {
             system_instruction: { parts: [{ text: system }] },
             contents: [{ role: "user", parts: [{ text: user }] }],
             generationConfig: { temperature, maxOutputTokens: maxTokens },
+        };
+    } else if (providerKey === "claude") {
+        headers["x-api-key"] = provider.apiKey();
+        headers["anthropic-version"] = "2023-06-01";
+        body = {
+            model: provider.model,
+            max_tokens: maxTokens,
+            temperature,
+            system,
+            messages: [{ role: "user", content: user }],
         };
     } else {
         headers["Authorization"] = `Bearer ${provider.apiKey()}`;
@@ -62,6 +80,5 @@ export async function callAI({
     });
 
     const data = await response.json();
-    console.log(data);
     return provider.parseResponse(data);
 }

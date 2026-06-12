@@ -7,6 +7,7 @@ import {
     getPosterUrl,
 } from "../lib/tmdb.js";
 import useStore from "../store.js";
+import { useAnalyzingMessage } from "../hooks/useAnalyzingMessage.js";
 
 function MoodPage() {
     const { slug } = useParams();
@@ -15,6 +16,7 @@ function MoodPage() {
     const setMood = useStore((state) => state.setMood);
     const status = useStore((state) => state.status);
     const setStatus = useStore((state) => state.setStatus);
+    const message = useAnalyzingMessage(status);
 
     const mood = moods[slug];
     const label = slug.replace(/-/g, " ");
@@ -66,6 +68,13 @@ function MoodPage() {
         fetchMood();
     }, [slug, mood]); // eslint-disable-line react-hooks/exhaustive-deps
 
+    useEffect(() => {
+        document.title = `${label} • Film Constellations`;
+        return () => {
+            document.title = "Film Constellations";
+        };
+    }, [label]);
+
     function handleFilmClick(item) {
         if (!item.slug || !item.tmdbData) return;
         const { setFilm } = useStore.getState();
@@ -81,8 +90,9 @@ function MoodPage() {
                 </a>
                 <div className="loader-page">
                     <div className="loader-inner">
+                        <p className="mood-center-text poster">{label}</p>
                         <div className="loader-spinner" />
-                        <p className="loader-text">Finding films</p>
+                        <p className="loader-text">{message}</p>
                     </div>
                 </div>
             </div>
@@ -105,10 +115,17 @@ function MoodPage() {
                 <div className="orbit-zone">
                     <div className="constellation-left">
                         {validFilms.slice(0, 6).map((item) => (
-                            <div
+                            <a
                                 key={item.title}
                                 className="c-node"
-                                onClick={() => handleFilmClick(item)}
+                                href={
+                                    item.slug ? `/film/${item.slug}` : undefined
+                                }
+                                onClick={(e) => {
+                                    if (!item.slug) return;
+                                    e.preventDefault();
+                                    handleFilmClick(item);
+                                }}
                             >
                                 <div className="c-card-inner">
                                     {item.tmdbData?.poster_path ? (
@@ -138,20 +155,42 @@ function MoodPage() {
                                         </p>
                                     </div>
                                 </div>
-                            </div>
+                            </a>
                         ))}
                     </div>
 
-                    <div className="poster-center">
-                        <p className="mood-center-text">{label}</p>
+                    <div className="text-center-container">
+                        <div
+                            style={{
+                                height: 20,
+                                background: "red",
+                                margin: "0 10px",
+                            }}
+                        ></div>
+                        {Array.from({ length: 16 }, (key, index) => (
+                            <p
+                                className="mood-center-text"
+                                key={index}
+                                index={index}
+                            >
+                                {label}
+                            </p>
+                        ))}
                     </div>
 
                     <div className="constellation-right">
                         {validFilms.slice(6, 12).map((item) => (
-                            <div
+                            <a
                                 key={item.title}
                                 className="c-node"
-                                onClick={() => handleFilmClick(item)}
+                                href={
+                                    item.slug ? `/film/${item.slug}` : undefined
+                                }
+                                onClick={(e) => {
+                                    if (!item.slug) return;
+                                    e.preventDefault();
+                                    handleFilmClick(item);
+                                }}
                             >
                                 <div className="c-card-inner">
                                     {item.tmdbData?.poster_path ? (
@@ -181,16 +220,23 @@ function MoodPage() {
                                         </p>
                                     </div>
                                 </div>
-                            </div>
+                            </a>
                         ))}
                     </div>
 
                     <div className="mobile-constellation">
                         {validFilms.map((item) => (
-                            <div
+                            <a
                                 key={`mobile-${item.title}`}
                                 className="c-node"
-                                onClick={() => handleFilmClick(item)}
+                                href={
+                                    item.slug ? `/film/${item.slug}` : undefined
+                                }
+                                onClick={(e) => {
+                                    if (!item.slug) return;
+                                    e.preventDefault();
+                                    handleFilmClick(item);
+                                }}
                             >
                                 <div className="c-card-inner">
                                     {item.tmdbData?.poster_path ? (
@@ -220,7 +266,7 @@ function MoodPage() {
                                         </p>
                                     </div>
                                 </div>
-                            </div>
+                            </a>
                         ))}
                     </div>
                 </div>

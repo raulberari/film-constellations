@@ -9,6 +9,7 @@ import {
     getFilmImages,
 } from "../lib/tmdb.js";
 import useStore from "../store.js";
+import { useAnalyzingMessage } from "../hooks/useAnalyzingMessage.js";
 
 function FilmPage() {
     const { slug } = useParams();
@@ -17,6 +18,7 @@ function FilmPage() {
     const setFilm = useStore((state) => state.setFilm);
     const status = useStore((state) => state.status);
     const setStatus = useStore((state) => state.setStatus);
+    const message = useAnalyzingMessage(status);
 
     const film = films[slug];
     const metadata = film?.metadata;
@@ -128,6 +130,15 @@ function FilmPage() {
         analyzeFilm();
     }, [slug, metadata]); // eslint-disable-line react-hooks/exhaustive-deps
 
+    useEffect(() => {
+        if (!metadata) return;
+        const year = metadata.release_date?.slice(0, 4);
+        document.title = `${metadata.title} (${year}) • Film Constellations`;
+        return () => {
+            document.title = "Film Constellations";
+        };
+    }, [metadata]);
+
     function handleConstellationClick(item) {
         if (!item.slug || !item.tmdbData) return;
         setFilm(item.slug, { metadata: item.tmdbData, analysis: null });
@@ -148,6 +159,7 @@ function FilmPage() {
                                 position: "static",
                                 transform: "none",
                                 marginBottom: "1rem",
+                                marginTop: "56px",
                             }}
                         >
                             {metadata?.poster_path && (
@@ -166,7 +178,7 @@ function FilmPage() {
                             </p>
                         </div>
                         <div className="loader-spinner" />
-                        <p className="loader-text">Analyzing</p>
+                        <p className="loader-text">{message}</p>
                     </div>
                 </div>
             </div>
@@ -176,8 +188,14 @@ function FilmPage() {
 
     let validConstellation = [];
     if (analysis) {
+        const seenIds = new Set([metadata?.id]);
         validConstellation = analysis.constellation
             .filter((item) => item.tmdbData !== null)
+            .filter((item) => {
+                if (seenIds.has(item.tmdbData.id)) return false;
+                seenIds.add(item.tmdbData.id);
+                return true;
+            })
             .slice(0, 12);
     }
     return (
@@ -191,12 +209,19 @@ function FilmPage() {
                     <div className="orbit-zone">
                         <div className="constellation-left">
                             {validConstellation.slice(0, 6).map((item) => (
-                                <div
+                                <a
                                     key={item.title}
                                     className="c-node"
-                                    onClick={() =>
-                                        handleConstellationClick(item)
+                                    href={
+                                        item.slug
+                                            ? `/film/${item.slug}`
+                                            : undefined
                                     }
+                                    onClick={(e) => {
+                                        if (!item.slug) return;
+                                        e.preventDefault();
+                                        handleConstellationClick(item);
+                                    }}
                                 >
                                     <div className="c-card-inner">
                                         {item.tmdbData?.poster_path ? (
@@ -230,7 +255,7 @@ function FilmPage() {
                                             </p>
                                         </div>
                                     </div>
-                                </div>
+                                </a>
                             ))}
                         </div>
 
@@ -255,12 +280,19 @@ function FilmPage() {
 
                         <div className="constellation-right">
                             {validConstellation.slice(6, 12).map((item) => (
-                                <div
+                                <a
                                     key={item.title}
                                     className="c-node"
-                                    onClick={() =>
-                                        handleConstellationClick(item)
+                                    href={
+                                        item.slug
+                                            ? `/film/${item.slug}`
+                                            : undefined
                                     }
+                                    onClick={(e) => {
+                                        if (!item.slug) return;
+                                        e.preventDefault();
+                                        handleConstellationClick(item);
+                                    }}
                                 >
                                     <div className="c-card-inner">
                                         {item.tmdbData?.poster_path ? (
@@ -294,18 +326,25 @@ function FilmPage() {
                                             </p>
                                         </div>
                                     </div>
-                                </div>
+                                </a>
                             ))}
                         </div>
 
                         <div className="mobile-constellation">
                             {validConstellation.map((item) => (
-                                <div
+                                <a
                                     key={`mobile-${item.title}`}
                                     className="c-node"
-                                    onClick={() =>
-                                        handleConstellationClick(item)
+                                    href={
+                                        item.slug
+                                            ? `/film/${item.slug}`
+                                            : undefined
                                     }
+                                    onClick={(e) => {
+                                        if (!item.slug) return;
+                                        e.preventDefault();
+                                        handleConstellationClick(item);
+                                    }}
                                 >
                                     <div className="c-card-inner">
                                         {item.tmdbData?.poster_path ? (
@@ -339,7 +378,7 @@ function FilmPage() {
                                             </p>
                                         </div>
                                     </div>
-                                </div>
+                                </a>
                             ))}
                         </div>
                     </div>

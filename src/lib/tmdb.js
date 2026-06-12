@@ -2,19 +2,49 @@ const BASE_URL = "https://api.themoviedb.org/3";
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
 export async function searchFilm(query, year = null) {
-    const yearParam = year ? `&year=${year}` : "";
-    const res = await fetch(
-        `${BASE_URL}/search/movie?query=${encodeURIComponent(query)}&api_key=${API_KEY}${yearParam}`,
-    );
-    const data = await res.json();
-    if (!data.results?.length) return null;
+    async function fetchResults(q, y) {
+        const yearParam = y ? `&year=${y}` : "";
+        const res = await fetch(
+            `${BASE_URL}/search/movie?query=${encodeURIComponent(q)}&api_key=${API_KEY}${yearParam}`,
+        );
+        const data = await res.json();
+        return data.results ?? [];
+    }
 
-    if (year) return data.results[0];
+    function stripArticles(str) {
+        return str
+            .toLowerCase()
+            .replace(/^(the|a|an) /, "")
+            .trim();
+    }
 
-    const exact = data.results.find(
-        (r) => r.title.toLowerCase() === query.toLowerCase(),
+    let results = await fetchResults(query, year);
+    if (!results.length && year) {
+        results = await fetchResults(query, null);
+    }
+    if (!results.length) return null;
+
+    const normalQ = query.toLowerCase();
+    const strippedQ = stripArticles(query);
+
+    // exact match first
+    const exact = results.find(
+        (r) =>
+            r.title.toLowerCase() === normalQ ||
+            r.original_title.toLowerCase() === normalQ,
     );
-    return exact ?? data.results[0];
+    if (exact) return exact;
+
+    // article-stripped match second
+    const stripped = results.find(
+        (r) =>
+            stripArticles(r.title) === strippedQ ||
+            stripArticles(r.original_title) === strippedQ,
+    );
+    if (stripped) return stripped;
+
+    // fall back to highest popularity among results
+    return results.sort((a, b) => b.popularity - a.popularity)[0];
 }
 
 export async function getFilmDetails(tmdbId) {
@@ -33,6 +63,8 @@ export function buildSlug(title, year) {
     return (
         title
             .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
             .replace(/[^a-z0-9]+/g, "-")
             .replace(/^-|-$/g, "") +
         "-" +
