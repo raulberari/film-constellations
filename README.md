@@ -1,5 +1,8 @@
 # Film Constellations
 
+Live here:
+[https://film-constellations.vercel.app/](https://film-constellations.vercel.app/)
+
 A React app for film discovery and recommendation using TMDB for film info and Gemini & Deepseek prompts for info and related films.
 
 ### Core features
