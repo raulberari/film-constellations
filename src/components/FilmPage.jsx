@@ -19,6 +19,7 @@ function FilmPage() {
     const status = useStore((state) => state.status);
     const setStatus = useStore((state) => state.setStatus);
     const [essayLoading, setEssayLoading] = useState(false);
+    const [essayError, setEssayError] = useState(false);
     const message = useAnalyzingMessage(status);
     const essayMessage = useAnalyzingMessage(
         essayLoading ? "analyzing" : "idle",
@@ -160,13 +161,14 @@ function FilmPage() {
                 setFilm(slug, { ...currentFilm, essay: { essay: data.essay } });
             } catch (err) {
                 console.error(err);
+                setEssayError(true);
             } finally {
                 setEssayLoading(false);
             }
         }
 
         fetchEssay();
-    }, [slug, metadata, essay]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [slug, metadata, essay, essayError]); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         if (!metadata) return;
@@ -459,6 +461,17 @@ function FilmPage() {
                             {essayMessage}
                         </p>
                     </div>
+                )}
+                {essayError && !essay && (
+                    <p
+                        className="loader-text"
+                        style={{ cursor: "pointer" }}
+                        onClick={() => {
+                            setEssayError(false);
+                        }}
+                    >
+                        Failed to load essay. Tap to retry.
+                    </p>
                 )}
                 {essay && (
                     <div className="essay-body">
