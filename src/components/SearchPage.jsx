@@ -10,22 +10,81 @@ import {
 import useStore from "../store.js";
 
 const BACKDROPS = [
-    "https://image.tmdb.org/t/p/original/4lmi9qr9qcECzvoRLhUymTHeDKW.jpg",
-    "https://image.tmdb.org/t/p/original/myaJXaFqaQQ9KVcSbiuTaf1KhJN.jpg",
-    "https://image.tmdb.org/t/p/original/ipb79nkUA2qNiN7SyYKLS5evRL5.jpg",
-    "https://image.tmdb.org/t/p/original/6t1Ea7Oq46jmtUpcm5ZTYws57Tq.jpg",
-    "https://image.tmdb.org/t/p/original/8Xmq8ZZiuWXNy7xPsMVDPEAgNuJ.jpg",
-    "https://image.tmdb.org/t/p/original/liVaHQe4pAzRCdV8aObKVLshBa8.jpg",
-    "https://image.tmdb.org/t/p/original/ph1yt4KitbSLqS4VouDUBUkXpnm.jpg",
-    "https://image.tmdb.org/t/p/original/uAUTW2JakzaqO2YxFDc0GQ6SkIc.jpg",
-    "https://image.tmdb.org/t/p/original/jgI58K8ipmPmS72DrWpwvuPHB3z.jpg",
-    "https://image.tmdb.org/t/p/original/bOHq7n79I3gNDI3yMGidlLadJGA.jpg",
-    "https://image.tmdb.org/t/p/original/fXOoyuuvCkoXp0b43YqEYiipHkN.jpg",
-    "https://image.tmdb.org/t/p/original/y9p3ZfDc0H6MjxddeZ9e5ufbstV.jpg",
-    "https://image.tmdb.org/t/p/original/9eUKLg2HAxE86b0DmQMN5VAxU9B.jpg",
-    "https://image.tmdb.org/t/p/original/2834YQ1Zq8UP6fwJIVZtnhYU0Cs.jpg",
-    "https://image.tmdb.org/t/p/original/sUy6Ti0zTGnQffeyMRq03xIOu9E.jpg",
-    "https://image.tmdb.org/t/p/original/lmq6cfQNKcjlcKT4BF1pHy9i4Ud.jpg",
+    {
+        url: "https://image.tmdb.org/t/p/original/4lmi9qr9qcECzvoRLhUymTHeDKW.jpg",
+        film: "Xiao Wu (1997)",
+        slug: "/film/pickpocket-1997",
+    },
+    {
+        url: "https://image.tmdb.org/t/p/original/myaJXaFqaQQ9KVcSbiuTaf1KhJN.jpg",
+        film: "Too Early / Too Late (1982)",
+        slug: "/film/too-early-too-late-1982",
+    },
+    {
+        url: "https://image.tmdb.org/t/p/original/ipb79nkUA2qNiN7SyYKLS5evRL5.jpg",
+        film: "Love Streams (1984)",
+        slug: "/film/love-streams-1984",
+    },
+    {
+        url: "https://image.tmdb.org/t/p/original/6t1Ea7Oq46jmtUpcm5ZTYws57Tq.jpg",
+        film: "Manhunter (1986)",
+        slug: "/film/manhunter-1986",
+    },
+    {
+        url: "https://image.tmdb.org/t/p/original/8Xmq8ZZiuWXNy7xPsMVDPEAgNuJ.jpg",
+        film: "Heat (1995)",
+        slug: "/film/heat-1995",
+    },
+    {
+        url: "https://image.tmdb.org/t/p/original/liVaHQe4pAzRCdV8aObKVLshBa8.jpg",
+        film: "Goodbye, Dragon Inn (2003)",
+        slug: "/film/goodbye-dragon-inn-2003",
+    },
+    {
+        url: "https://image.tmdb.org/t/p/original/uAUTW2JakzaqO2YxFDc0GQ6SkIc.jpg",
+        film: "Nowhere (1997)",
+        slug: "/film/nowhere-1997",
+    },
+    {
+        url: "https://image.tmdb.org/t/p/original/jgI58K8ipmPmS72DrWpwvuPHB3z.jpg",
+        film: "Made in Hong Kong (1997)",
+        slug: "/film/made-in-hong-kong-1997",
+    },
+    {
+        url: "https://image.tmdb.org/t/p/original/bOHq7n79I3gNDI3yMGidlLadJGA.jpg",
+        film: "Goodbye to Language (2014)",
+        slug: "/film/goodbye-to-language-2014",
+    },
+    {
+        url: "https://image.tmdb.org/t/p/original/fXOoyuuvCkoXp0b43YqEYiipHkN.jpg",
+        film: "Red Desert (1964)",
+        slug: "/film/red-desert-1964",
+    },
+    {
+        url: "https://image.tmdb.org/t/p/original/v39RYlCUnlhn9nVZFM5TIcvGPrY.jpg",
+        film: "Mulholland Drive (2001)",
+        slug: "/film/mulholland-drive-2001",
+    },
+    {
+        url: "https://image.tmdb.org/t/p/original/9eUKLg2HAxE86b0DmQMN5VAxU9B.jpg",
+        film: "The Color of Pomegranates (1969)",
+        slug: "/film/the-color-of-pomegranates-1969",
+    },
+    {
+        url: "https://image.tmdb.org/t/p/original/2834YQ1Zq8UP6fwJIVZtnhYU0Cs.jpg",
+        film: "Paris, Texas (1984)",
+        slug: "/film/paris-texas-1984",
+    },
+    {
+        url: "https://image.tmdb.org/t/p/original/sUy6Ti0zTGnQffeyMRq03xIOu9E.jpg",
+        film: "The Cranes are Flying (1957)",
+        slug: "/film/the-cranes-are-flying-1957",
+    },
+    {
+        url: "https://image.tmdb.org/t/p/original/lmq6cfQNKcjlcKT4BF1pHy9i4Ud.jpg",
+        film: "Hours for Jerome (1982)",
+        slug: "/film/hours-for-jerome-1982",
+    },
 ];
 
 const backdrop = BACKDROPS[Math.floor(Math.random() * BACKDROPS.length)];
@@ -90,8 +149,11 @@ function SearchPage() {
     return (
         <div
             className="search-page"
-            style={{ backgroundImage: `url(${backdrop})` }}
+            style={{ backgroundImage: `url(${backdrop.url})` }}
         >
+            <a className="search-page-film-name" href={backdrop.slug}>
+                {backdrop.film}
+            </a>
             <div className="search-inner">
                 <div className="search-title-container">
                     <div className="red-square" />

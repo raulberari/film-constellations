@@ -38,45 +38,6 @@ export const systemInstruction = `
     You always respond with valid JSON matching the exact schema provided. 
     No markdown, no preamble, no explanation outside the JSON.`;
 
-export function buildPrompt(film) {
-    const director =
-        film.credits?.crew?.find((p) => p.job === "Director")?.name ??
-        "Unknown";
-    const cast = film.credits?.cast
-        ?.slice(0, 5)
-        .map((p) => p.name)
-        .join(", ");
-    const year = film.release_date?.slice(0, 4);
-    const genres = film.genres?.map((g) => g.name).join(", ");
-
-    return `
-        Analyze the following film and return a JSON object with this exact structure:
-      
-        {
-            "themes": ["3-6 thematic preoccupations, max 3-4 words each, not genres — e.g. 'colonial memory', 'erotic ambivalence'"],
-            "constellation": [
-                {
-                "title": "mostly SIMILAR film titles. dont recommend the same film as the one submitted",
-                "year": 1985,
-                "relation": "precise sentence explaining the relationship"
-                }
-            ],
-            "essay": "2-4 paragraphs. Brief orientation first, then genuine critical analysis.",
-        }
-
-        Return exactly ${CONSTELLATION_SIZE + 3} items in the constellation array.
-        No markdown, no preamble, no explanation outside the JSON.
-
-        Film data:
-        Title: ${film.title}
-        Year: ${year}
-        Director: ${director}
-        Cast: ${cast}
-        Genres: ${genres}
-        Runtime: ${film.runtime} minutes
-        Overview: ${film.overview}`;
-}
-
 export function buildConstellationPrompt(film) {
     const director =
         film.credits?.crew?.find((p) => p.job === "Director")?.name ??

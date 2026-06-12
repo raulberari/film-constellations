@@ -464,6 +464,16 @@ body {
     transition: opacity 0.4s ease;
 }
 
+.search-page-film-name {
+    position: absolute;
+    color: white;
+    bottom: 0;
+    right: 0;
+    padding: 10px;
+    font-size: 11px;
+    text-decoration: none;
+}
+
 @media screen and (max-width: 768px) {
     .c-relation {
         font-size: 10px;
