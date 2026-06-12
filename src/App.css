@@ -394,14 +394,15 @@ body {
 
 .essay-body {
     max-width: 720px;
-}
-
-.essay-text {
     font-size: 14px;
     line-height: 1.4;
     color: #111;
     column-gap: 2rem;
     columns: 2;
+}
+
+.essay-text {
+    margin-bottom: 10px;
 }
 
 .theme-link {

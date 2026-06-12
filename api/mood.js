@@ -28,6 +28,7 @@ export default async function handler(req, res) {
 
     try {
         const text = await callAI({
+            provider: "gemini",
             system: systemInstruction,
             user: `Return a JSON array of exactly 15 films that exemplify the theme, mood, country, or director: "${mood}".
                 - If it is a theme or mood, return 15 films that exemplify it.

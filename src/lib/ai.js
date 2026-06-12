@@ -34,7 +34,7 @@ export async function callAI({
     system,
     user,
     temperature = 0.7,
-    maxTokens = 9192,
+    maxTokens = 16000,
 }) {
     const providerKey = providerOverride ?? AI_PROVIDER;
     const provider = PROVIDERS[providerKey];
@@ -80,5 +80,7 @@ export async function callAI({
     });
 
     const data = await response.json();
+
+    console.log(data);
     return provider.parseResponse(data);
 }
