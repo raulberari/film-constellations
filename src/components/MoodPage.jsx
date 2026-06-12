@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
     searchFilm,
@@ -7,7 +7,7 @@ import {
     getPosterUrl,
 } from "../lib/tmdb.js";
 import useStore from "../store.js";
-import { useAnalyzingMessage } from "../hooks/useAnalyzingMessage.js";
+import Logo from "./Logo.jsx";
 
 function MoodPage() {
     const { slug } = useParams();
@@ -16,11 +16,19 @@ function MoodPage() {
     const setMood = useStore((state) => state.setMood);
     const status = useStore((state) => state.status);
     const setStatus = useStore((state) => state.setStatus);
-    const message = useAnalyzingMessage(status);
+    const [tick, setTick] = useState(0);
 
     const mood = moods[slug];
     const label = slug.replace(/-/g, " ");
 
+    const glitches = useMemo(
+        () =>
+            Array.from({ length: 16 }, (_, i) => ({
+                seed: (tick * 3 + i * 7) % 100,
+                radius: (1 + ((tick * Math.random() + i) % 5)) / 10,
+            })),
+        [tick],
+    );
     useEffect(() => {
         if (mood) return;
 
@@ -75,30 +83,20 @@ function MoodPage() {
         };
     }, [label]);
 
+    useEffect(() => {
+        if (mood) return; // stop once loaded
+        const interval = setInterval(() => {
+            setTick((t) => t + 1);
+        }, 150);
+        return () => clearInterval(interval);
+    }, [mood]);
+
     function handleFilmClick(item) {
         if (!item.slug || !item.tmdbData) return;
         const { setFilm } = useStore.getState();
         setFilm(item.slug, { metadata: item.tmdbData, analysis: null });
         navigate(`/film/${item.slug}`);
     }
-
-    if (status === "analyzing")
-        return (
-            <div className="full-page">
-                <a href="/" className="logo">
-                    <h1>Film Constellations</h1>
-                </a>
-                <div className="loader-page">
-                    <div className="loader-inner">
-                        <p className="mood-center-text poster">{label}</p>
-                        <div className="loader-spinner" />
-                        <p className="loader-text">{message}</p>
-                    </div>
-                </div>
-            </div>
-        );
-
-    if (status === "error") return <p>Something went wrong.</p>;
 
     let validFilms = [];
     if (mood) {
@@ -108,9 +106,53 @@ function MoodPage() {
     }
     return (
         <div className="full-page">
-            <a href="/" className="logo">
-                <h1>Film Constellations</h1>
-            </a>
+            <Logo />
+            <svg width="0" height="0" style={{ position: "absolute" }}>
+                <defs>
+                    {glitches.map((g, i) => (
+                        <filter key={i} id={`glitch-${i}`}>
+                            <feTurbulence
+                                type="turbulence"
+                                baseFrequency="0.01"
+                                numOctaves="1"
+                                seed={g.seed}
+                                result="noise"
+                            />
+                            <feDisplacementMap
+                                in="SourceGraphic"
+                                in2="noise"
+                                scale="10"
+                                xChannelSelector="R"
+                                yChannelSelector="G"
+                                result="warped"
+                            />
+                            <feMorphology
+                                operator="dilate"
+                                radius={g.radius}
+                                in="warped"
+                            />
+                        </filter>
+                    ))}
+                </defs>
+            </svg>
+            {status === "error" && (
+                <div className="loader-page">
+                    <p>Something went wrong.</p>
+                </div>
+            )}
+            {status === "analyzing" && (
+                <div className="loader-page">
+                    <div className="loader-inner">
+                        <p
+                            className="mood-center-text poster"
+                            style={{ filter: `url(#glitch-0)` }}
+                        >
+                            {label}
+                        </p>
+                        {/* <div className="loader-spinner" /> */}
+                    </div>
+                </div>
+            )}
             {mood && (
                 <div className="orbit-zone">
                     <div className="constellation-left">
@@ -160,18 +202,11 @@ function MoodPage() {
                     </div>
 
                     <div className="text-center-container">
-                        <div
-                            style={{
-                                height: 20,
-                                background: "red",
-                                margin: "0 10px",
-                            }}
-                        ></div>
-                        {Array.from({ length: 16 }, (key, index) => (
+                        {Array.from({ length: 16 }, (_, index) => (
                             <p
                                 className="mood-center-text"
                                 key={index}
-                                index={index}
+                                style={{ filter: `url(#glitch-${index})` }}
                             >
                                 {label}
                             </p>

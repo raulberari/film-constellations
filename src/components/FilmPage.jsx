@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -10,6 +11,7 @@ import {
 } from "../lib/tmdb.js";
 import useStore from "../store.js";
 import { useAnalyzingMessage } from "../hooks/useAnalyzingMessage.js";
+import Logo from "./Logo.jsx";
 
 function FilmPage() {
     const { slug } = useParams();
@@ -141,7 +143,7 @@ function FilmPage() {
         }
 
         fetchConstellation();
-    }, [slug, metadata, constellation, status]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [slug, metadata, constellation, status]);
 
     // EFFECT 2 — essay (silent, no status changes)
     useEffect(() => {
@@ -168,7 +170,7 @@ function FilmPage() {
         }
 
         fetchEssay();
-    }, [slug, metadata, essay, essayError]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [slug, metadata, essay, essayError]);
 
     useEffect(() => {
         if (!metadata) return;
@@ -188,9 +190,7 @@ function FilmPage() {
     if (status === "analyzing" || status === "fetching")
         return (
             <div className="full-page">
-                <a href="/" className="logo">
-                    <h1>Film Constellations</h1>
-                </a>
+                <Logo />
                 <div className="loader-page">
                     <div className="loader-inner">
                         <div
@@ -240,9 +240,7 @@ function FilmPage() {
     }
     return (
         <div className="full-page">
-            <a href="/" className="logo">
-                <h1>Film Constellations</h1>
-            </a>
+            <Logo />
             {constellation && (
                 <div className="orbit-zone">
                     <div className="constellation-left">
@@ -402,7 +400,38 @@ function FilmPage() {
                 </div>
             )}
             <div className="essay-zone">
-                <h1 className="film-title-huge">{metadata?.title}</h1>
+                <svg width="0" height="0" style={{ position: "absolute" }}>
+                    <defs>
+                        <filter id="title-glitch">
+                            <feTurbulence
+                                type="turbulence"
+                                baseFrequency="0.15"
+                                numOctaves="5"
+                                seed="42"
+                                result="noise"
+                            />
+                            <feDisplacementMap
+                                in="SourceGraphic"
+                                in2="noise"
+                                scale="2"
+                                xChannelSelector="R"
+                                yChannelSelector="G"
+                                result="warped"
+                            />
+                            <feMorphology
+                                operator="dilate"
+                                radius="1"
+                                in="warped"
+                            />
+                        </filter>
+                    </defs>
+                </svg>
+                <h1
+                    className="film-title-huge"
+                    style={{ filter: "url(#title-glitch)" }}
+                >
+                    {metadata?.title}
+                </h1>
                 <p className="film-meta-line">
                     {year} ·{" "}
                     {directors.map((d, i) => (

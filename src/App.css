@@ -81,11 +81,23 @@ body {
     align-items: center;
 }
 
+.search-title-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.search-title-container .red-square {
+    width: 70px;
+    height: 70px;
+    background: red;
+    margin: 0 20px;
+}
+
 .search-title {
-    font-size: clamp(64px, 10vw, 96px);
+    font-size: clamp(64px, 8vw, 96px);
     color: #fafafa;
     font-weight: 700;
-    margin-bottom: 0.5rem;
 }
 
 .search-subtitle {
@@ -177,6 +189,8 @@ body {
     position: relative;
     margin-top: 12px;
     height: 30px;
+    display: flex;
+    align-items: center;
 }
 
 .logo h1 {
@@ -187,6 +201,13 @@ body {
 
 .logo:visited {
     color: black;
+}
+
+.logo .red-square {
+    height: 20px;
+    width: 20px;
+    background: red;
+    margin: 0 10px;
 }
 
 .full-page {
@@ -233,6 +254,7 @@ body {
 .text-center-container {
     display: flex;
     flex-direction: column;
+    white-space: nowrap;
 }
 
 .poster-center {
@@ -421,7 +443,7 @@ body {
 
 .mood-center-text {
     font-size: 16px;
-    font-weight: 900;
+    font-weight: 500;
     font-family: "Helvetica Neue", sans-serif;
     color: #111;
     line-height: 1.1;
@@ -449,8 +471,14 @@ body {
         -webkit-line-clamp: 7;
     }
 
+    .search-title-container .red-square {
+        width: 30px;
+        height: 30px;
+        margin: 0 10px;
+    }
+
     .search-title {
-        font-size: 48px;
+        font-size: 36px;
     }
     .search-input {
         font-size: 16px;

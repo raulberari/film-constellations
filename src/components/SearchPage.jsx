@@ -93,7 +93,10 @@ function SearchPage() {
             style={{ backgroundImage: `url(${backdrop})` }}
         >
             <div className="search-inner">
-                <h1 className="search-title">Film Constellations</h1>
+                <div className="search-title-container">
+                    <div className="red-square" />
+                    <h1 className="search-title">film constellations</h1>
+                </div>
                 <p className="search-subtitle">
                     A map of cinema built through association.
                 </p>
