@@ -132,6 +132,7 @@ export function buildEssayPrompt(film) {
 
         Return exactly ${CONSTELLATION_SIZE + 3} items in the constellation array.
         No markdown, no preamble, no explanation outside the JSON.
+        Avoid the words "refuse" and "bodies".
 
         Film data:
         Title: ${film.title}
